@@ -171,7 +171,7 @@ psycopg2-binary    # PostgreSQL adapter สำหรับ Python
 
 - **Backend**: Flask, SQLAlchemy, Flask-WTF
 - **Database**: PostgreSQL 15
-- **Frontend**: Bootstrap 5, HTML5, Jinja2 Templates
+- **Frontend**: Bootstrap 5, HTML5, Jinja2 
 - **Form Handling**: Flask-WTF, WTForms
 - **Database ORM**: SQLAlchemy
 - **Containerization**: Docker, Docker Compose

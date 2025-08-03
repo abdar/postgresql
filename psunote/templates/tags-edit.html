@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="container mt-4">
+  <h2>แก้ไข Tag</h2>
+  <form method="POST">
+    {{ form.csrf_token }}
+    <div class="mb-3">
+      <label for="name" class="form-label">ชื่อ Tag</label>
+      {{ form.name(class="form-control", id="name") }}
+      {% if form.name.errors %}
+        <div class="alert alert-danger">
+          {% for error in form.name.errors %}
+            {{ error }}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    {{ form.original_name() }}
+    <div class="mb-3">
+      <button type="submit" class="btn btn-primary">อัปเดต</button>
+      <a href="{{ url_for('tags_view', tag_name=tag.name) }}" class="btn btn-secondary">ยกเลิก</a>
+    </div>
+  </form>
+</div>
+{% endblock body %}

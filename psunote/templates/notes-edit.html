@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="container mt-4">
+  <h2>แก้ไขโน้ต</h2>
+  <form method="POST">
+    {{ form.csrf_token }}
+    <div class="mb-3">
+      <label for="title" class="form-label">หัวข้อ</label>
+      {{ form.title(class="form-control", id="title") }}
+      {% if form.title.errors %}
+        <div class="alert alert-danger">
+          {% for error in form.title.errors %}
+            {{ error }}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    <div class="mb-3">
+      <label for="description" class="form-label">รายละเอียด</label>
+      {{ form.description(class="form-control", id="description", rows=5) }}
+      {% if form.description.errors %}
+        <div class="alert alert-danger">
+          {% for error in form.description.errors %}
+            {{ error }}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    <div class="mb-3">
+      <label for="tags" class="form-label">แท็ก (คั่นด้วยเครื่องหมายจุลภาค)</label>
+      {{ form.tags(class="form-control", id="tags") }}
+      <small class="form-text text-muted">เช่น tag1, tag2, tag3</small>
+      {% if form.tags.errors %}
+        <div class="alert alert-danger">
+          {% for error in form.tags.errors %}
+            {{ error }}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    {{ form.note_id() }}
+    <div class="mb-3">
+      <button type="submit" class="btn btn-primary">อัปเดต</button>
+      <a href="{{ url_for('index') }}" class="btn btn-secondary">ยกเลิก</a>
+    </div>
+  </form>
+</div>
+{% endblock body %}

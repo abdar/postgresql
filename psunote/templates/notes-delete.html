@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="container mt-4">
+  <h2>ลบโน้ต</h2>
+  <div class="alert alert-warning">
+    <h4>คุณแน่ใจหรือไม่ที่จะลบโน้ตนี้?</h4>
+    <p><strong>หัวข้อ:</strong> {{ note.title }}</p>
+    <p><strong>รายละเอียด:</strong> {{ note.description }}</p>
+    <p><strong>แท็ก:</strong> 
+      {% for tag in note.tags %}
+        <span class="badge bg-secondary">{{ tag.name }}</span>
+      {% endfor %}
+    </p>
+  </div>
+  <form method="POST">
+    {{ form.csrf_token }}
+    {{ form.note_id() }}
+    <div class="mb-3">
+      <button type="submit" class="btn btn-danger">ยืนยันการลบ</button>
+      <a href="{{ url_for('index') }}" class="btn btn-secondary">ยกเลิก</a>
+    </div>
+  </form>
+</div>
+{% endblock body %}

@@ -21,49 +21,136 @@
 ## โครงสร้างโปรเจค
 
 ```
-psunote/
-├── models.py           # โมเดลฐานข้อมูล (Note, Tag)
-├── forms.py            # แบบฟอร์ม WTForms
-├── noteapp.py          # แอปพลิเคชัน Flask หลัก
-├── templates/          # เทมเพลตเพจ HTML
-│   ├── base.html       # เทมเพลตพื้นฐาน
-│   ├── index.html      # หน้าแรกแสดงรายการโน้ตทั้งหมด
-│   ├── notes-create.html  # สร้างโน้ตใหม่
-│   ├── notes-edit.html    # แก้ไขโน้ต
-│   ├── notes-delete.html  # ลบโน้ต
-│   ├── tags-create.html   # สร้างแท็กใหม่
-│   ├── tags-edit.html     # แก้ไขแท็ก
-│   ├── tags-delete.html   # ลบแท็ก
-│   └── tags-view.html     # แสดงโน้ตตามแท็ก
-└── README.md           # เอกสารนี้
+postgresql/
+├── docker-compose.yml       # ไฟล์กำหนดค่า Docker สำหรับ PostgreSQL และ pgAdmin
+├── requirements.txt         # รายการ dependencies หลักของโปรเจค
+├── README.md               # เอกสารนี้
+└── psunote/               # โฟลเดอร์แอปพลิเคชันหลัก
+    ├── models.py          # โมเดลฐานข้อมูล (Note, Tag, ความสัมพันธ์)
+    ├── forms.py           # แบบฟอร์ม WTForms สำหรับการรับข้อมูล
+    ├── noteapp.py         # แอปพลิเคชัน Flask หลักและ routing
+    ├── templates/         # เทมเพลตเพจ HTML ด้วย Jinja2
+    │   ├── base.html      # เทมเพลตหลักที่ใช้ร่วมกัน
+    │   ├── index.html     # หน้าแรกแสดงรายการโน้ตทั้งหมด
+    │   ├── notes-create.html  # ฟอร์มสร้างโน้ตใหม่
+    │   ├── notes-edit.html    # ฟอร์มแก้ไขโน้ต
+    │   ├── notes-delete.html  # หน้ายืนยันการลบโน้ต
+    │   ├── tags-create.html   # ฟอร์มสร้างแท็กใหม่
+    │   ├── tags-edit.html     # ฟอร์มแก้ไขแท็ก
+    │   ├── tags-delete.html   # หน้ายืนยันการลบแท็ก
+    │   └── tags-view.html     # หน้าแสดงโน้ตตามแท็กที่เลือก
+    └── __pycache__/       # ไฟล์ bytecode ที่ Python สร้างขึ้น
 ```
 
-## การติดตั้ง
+## การติดตั้งและการตั้งค่า
 
-1. **ติดตั้ง Python และ pip** (ต้องการ Python 3.8+)
-2. **สร้างและเปิดใช้สภาพแวดล้อมเสมือน (Virtual Environment)**
+### การใช้ Docker 
+
+1. **ติดตั้ง Docker และ Docker Compose**
+
+   - สำหรับ Windows: ดาวน์โหลด Docker Desktop จาก [docker.com](https://www.docker.com/products/docker-desktop)
+   - สำหรับ Linux/Mac: ติดตั้งตามคำแนะนำใน [เอกสาร Docker](https://docs.docker.com/get-docker/)
+2. **เริ่มต้นฐานข้อมูล PostgreSQL และ pgAdmin**
 
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # สำหรับ Linux/Mac
-   venv\Scripts\activate  # สำหรับ Windows
+   # เปิด Terminal/Command Prompt ที่โฟลเดอร์โปรเจค
+   cd postgresql
+
+   # เริ่มต้นบริการ PostgreSQL และ pgAdmin
+   docker-compose up -d
    ```
-3. **ติดตั้ง dependencies จากไฟล์ requirements.txt**
+3. **ตรวจสอบสถานะการทำงาน**
 
    ```bash
-   pip install -r requirements.txt
+   # ตรวจสอบว่าบริการทำงานปกติหรือไม่
+   docker-compose ps
    ```
-4. **ตั้งค่าฐานข้อมูล PostgreSQL**
+4. **การเข้าถึงบริการ**
 
-   - สร้างฐานข้อมูล `coedb`
-   - ตั้งค่าผู้ใช้ `coe` ด้วยรหัสผ่าน `CoEpasswd`
-   - หรือแก้ไขการตั้งค่าการเชื่อมต่อฐานข้อมูลในไฟล์ `noteapp.py` ตามความเหมาะสม
-5. **เริ่มต้นแอปพลิเคชัน**
+   - **PostgreSQL Database**: `localhost:5432`
+     - Database: `coedb`
+     - Username: `coe`
+     - Password: `CoEpasswd`
+   - **pgAdmin Web Interface**:
+     - HTTP: `http://localhost:7080`
+     - HTTPS: `https://localhost:7443`
+     - Email: `coe@local.db`
+     - Password: `CoEpasswd`
+
+#### การตั้งค่าผ่าน pgAdmin (ถ้าใช้ Docker)
+
+1. เปิดเว็บเบราว์เซอร์ไปที่ `http://localhost:7080`
+2. เข้าสู่ระบบด้วย:
+   - Email: `coe@local.db`
+   - Password: `CoEpasswd`
+3. เพิ่มเซิร์ฟเวอร์ใหม่:
+   - Name: `PostgreSQL Local`
+   - Host: `postgresql` (ชื่อ container)
+   - Port: `5432`
+   - Username: `coe`
+   - Password: `CoEpasswd`
+
+### การเริ่มต้นใช้งานแอปพลิเคชัน
+
+1. **เข้าไปในโฟลเดอร์แอปพลิเคชัน**
 
    ```bash
+   cd psunote
+   ```
+2. **เริ่มต้นแอปพลิเคชัน Flask**
+
+   ```bash
+   # ถ้าใช้ virtual environment (วิธีที่ 2)
+   python noteapp.py
+
+   # หรือถ้าใช้ Docker สามารถรันแอปได้โดยตรง
    python noteapp.py
    ```
-6. **เปิดเว็บเบราว์เซอร์และไปที่** `http://localhost:5000`
+3. **เปิดเว็บเบราว์เซอร์และไปที่**
+
+   ```
+   http://localhost:5000
+   ```
+
+### การจัดการ Docker Services
+
+```bash
+# เริ่มต้นบริการ
+docker-compose up -d
+
+# หยุดบริการ
+docker-compose stop
+
+# หยุดและลบ containers
+docker-compose down
+
+# ดูสถานะบริการ
+docker-compose ps
+
+# ดู logs
+docker-compose logs postgresql
+docker-compose logs pgadmin
+
+# เข้าไปใน PostgreSQL container
+docker-compose exec postgresql psql -U coe -d coedb
+```
+
+## Dependencies และ Requirements
+
+### requirements.txt
+
+```
+flask              # เฟรมเวิร์คเว็บ Python
+flask-wtf          # การจัดการฟอร์มใน Flask
+flask-sqlalchemy   # ORM สำหรับฐานข้อมูล
+wtforms-sqlalchemy # การผสานระหว่าง WTForms และ SQLAlchemy
+psycopg2-binary    # PostgreSQL adapter สำหรับ Python
+```
+
+### Docker Services
+
+- **PostgreSQL 15**: ระบบจัดการฐานข้อมูลหลัก
+- **pgAdmin 4**: เครื่องมือจัดการฐานข้อมูล PostgreSQL ผ่านเว็บ
 
 ## วิธีการใช้งาน
 
@@ -80,33 +167,15 @@ psunote/
 - **แก้ไขแท็ก**: ไปที่หน้าแสดงโน้ตตามแท็กและคลิกปุ่ม "แก้ไข"
 - **ลบแท็ก**: ไปที่หน้าแสดงโน้ตตามแท็กและคลิกปุ่ม "ลบ"
 
-## โครงสร้างฐานข้อมูล
-
-### ตาราง `notes`
-
-- `id`: คีย์หลัก
-- `title`: หัวข้อโน้ต
-- `description`: เนื้อหาโน้ต
-- `created_date`: วันที่สร้าง
-- `updated_date`: วันที่แก้ไขล่าสุด
-
-### ตาราง `tags`
-
-- `id`: คีย์หลัก
-- `name`: ชื่อแท็ก
-- `created_date`: วันที่สร้าง
-
-### ตาราง `note_tag` (ความสัมพันธ์หลายต่อหลาย)
-
-- `note_id`: อ้างอิงไปยัง notes.id
-- `tag_id`: อ้างอิงไปยัง tags.id
-
 ## เทคโนโลยีที่ใช้
 
-- **Backend**: Flask, SQLAlchemy
-- **Database**: PostgreSQL
-- **Frontend**: Bootstrap 5, HTML, Jinja2 Templates
+- **Backend**: Flask, SQLAlchemy, Flask-WTF
+- **Database**: PostgreSQL 15
+- **Frontend**: Bootstrap 5, HTML5, Jinja2 Templates
 - **Form Handling**: Flask-WTF, WTForms
+- **Database ORM**: SQLAlchemy
+- **Containerization**: Docker, Docker Compose
+- **Database Management**: pgAdmin 4
 
 ## ผู้พัฒนา
 
